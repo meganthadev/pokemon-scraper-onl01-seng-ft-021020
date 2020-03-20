@@ -1,11 +1,11 @@
 class Pokemon
   
   attr_accessor :name, :type, :db 
-  attr_reader :id
+  attr_reader :id 
   
   @@all = []
   
-  def initialize(id:, name:, type:, db:)
+  def initialize(id: nil, name:, type:, db: nil)
    @id = id
    @name = name
    @type = type
@@ -25,7 +25,17 @@ class Pokemon
     database_connection.execute("INSERT INTO pokemon (name, type) VALUES (?, ?)", name, type)
   end 
 
-  
+  def self.find(id, db)
+    sql = <<-SQL
+      SELECT *
+      FROM pokemon
+      WHERE id = ?
+    SQL
+
+    db.execute(sql, id).map do |row|
+      self.new(id: id, name: row[1], type: row[2])
+    end.first
+  end
   
   
   
